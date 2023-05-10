@@ -1,0 +1,15 @@
+---
+version: "3"
+services:
+  ml:
+    build: .
+    image: overenginar/narlab:latest
+    ports:
+      - "8901:8888"
+      - "8902:5000"
+      - "8903:5001"
+      - "8904:5002"
+    volumes:
+      - "~/narlab_data/:/narlab/data"
+    environment:
+      - MLFLOW_TRACKING_URI=http://localhost:5000
