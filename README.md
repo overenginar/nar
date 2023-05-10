@@ -16,6 +16,8 @@ docker compose up --no-build
 docker ps
 ```
 
+### WINE
+
 ```shell
 docker exec -it narlab-ml-1 mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri sqlite:///wine.db --default-artifact-root file:///mlruns
 ```
@@ -68,4 +70,37 @@ http_data = json.dumps({"dataframe_split": json.loads(test_data)})
 r = requests.post(url=url, headers=headers, data=http_data)
 print(f'Predictions: {r.text}')
 
+```
+
+### DIABETES
+
+```shell
+docker exec -it narlab-ml-1 mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri sqlite:///diabetes.db --default-artifact-root file:///mlruns
+```
+
+> http://localhost:8902
+
+```shell
+docker exec -it narlab-ml-1 mlflow ui --backend-store-uri sqlite:///diabetes.db --host 0.0.0.0 --port 5001
+```
+
+> http://localhost:8903
+
+```shell
+docker exec -it narlab-ml-1 /bin/bash
+cd narlab/diabetes
+python train.py 0.02 0.2
+```
+
+```shell
+docker exec -it narlab-ml-1 mlflow run narlab/diabetes -P alpha=0.4 --env-manager local
+```
+
+```shell
+docker exec -it narlab-ml-1 mlflow models serve --model-uri runs:/<run-id>/model
+```
+> `docker exec -it narlab-ml-1 mlflow models serve --host 0.0.0.0 --port 5002 --model-uri runs:/7d5d2a59e3a64b8e8ac352949ab90f59/model --env-manager local`
+
+```script
+curl -d '{"dataframe_split": {"columns": ["age", "sex", "bmi", "bp", "s1", "s2", "s3", "s4", "s5", "s6"], "index": [0, 1, 2], "data": [[0.0380759064, 0.0506801187, 0.0616962065, 0.0218723855, -0.0442234984, -0.0348207628, -0.0434008457, -0.002592262, 0.0199074862, -0.0176461252], [-0.0018820165, -0.0446416365, -0.0514740612, -0.0263275281, -0.0084487241, -0.0191633397, 0.0744115641, -0.0394933829, -0.0683315471, -0.0922040496], [0.0852989063, 0.0506801187, 0.0444512133, -0.0056704223, -0.0455994513, -0.0341944659, -0.0323559322, -0.002592262, 0.0028613093, -0.025930339]]}}'  -H 'Content-Type: application/json' localhost:8904/invocations
 ```
