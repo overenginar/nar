@@ -13,6 +13,7 @@ COPY . .
 COPY jupyter_notebook_config.py /root/.jupyter/jupyter_notebook_config.py
 
 RUN pip install mlflow==2.3.1
+RUN pip install shap==0.41.0
 
 EXPOSE 8888/tcp 5000/tcp 5001/tcp 5002/tcp
 
